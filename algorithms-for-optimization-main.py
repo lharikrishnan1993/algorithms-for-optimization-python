@@ -1,6 +1,7 @@
 import streamlit as st
 from introduction import aforo_introduction
 from derivatives_and_gradients import aforo_derivatives_and_gradients
+from bracketing import aforo_bracketing
 
 st.set_page_config(layout="wide")
 
@@ -15,6 +16,7 @@ with right:
 table_of_contents = {
     "Chapter - 1": aforo_introduction,
     "Chapter - 2": aforo_derivatives_and_gradients,
+    "Chapter - 3": aforo_bracketing,    
 }
 
 table_of_contents.get(chapter, aforo_introduction).run()
