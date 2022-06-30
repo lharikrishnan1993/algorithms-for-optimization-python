@@ -21,6 +21,23 @@ class AforO_Bracketing:
         initial_start = 5.0
         bracket = self.bracketer.bracket_minimum(self.univariate_function, initial_start)
         st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}**")
+        bracket_minimum_code = '''
+def bracket_minimum(self, function_to_optimize: typing.Callable, initial_state:float, step_size: float=1e-2, multiplier: float=2.0) -> tuple:
+  a, fa = initial_state, function_to_optimize(initial_state) 
+  b, fb = initial_state + step_size, function_to_optimize(initial_state + step_size)
+
+  if fb > fa:
+    step_size = -step_size
+    a, b, fa, fb = b, a, fb, fa
+    
+  while True:
+    c, fc = b + step_size, function_to_optimize(b + step_size)
+    if fc > fb:
+      return (round(a, 2), round(c, 2)) if c > a else (round(c, 2), round(a, 2))
+    a, b, fa, fb = b, c, fb, fc
+    step_size *= multiplier
+'''
+        st.code(bracket_minimum_code, language="python")
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=[i for i in range(-15, 16)], y=[self.univariate_function(i) for i in range(-15, 16)], mode='lines', name='Univariate Function'))
@@ -33,7 +50,35 @@ class AforO_Bracketing:
         st.subheader('Fibonacci Search')
 
         bracket = self.bracketer.fibonacci_search(self.univariate_function, -10, 10, 3)
-        st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}**")
+        st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}** for an initial bracket of **[-10, 10]** for 3 iterations")
+
+        fibonacci_search_code = '''
+def fibonacci_search(self, function_to_optimize: typing.Callable, a:float, b:float, n:float, epsilon:float=1e-2) -> tuple:
+  sqrt_five = math.sqrt(5)
+  s = (1 - sqrt_five) / (1 + sqrt_five)
+  phi = (1 + sqrt_five) / 2
+  rho = 1 / (phi * (1 - s**(n+1)) / (1 - s**n))
+  d = rho * b + (1 - rho) * a
+  yd = function_to_optimize(d)
+
+  for i in range(1, n):
+    if i == n-1:
+      c = epsilon * a + (1 - epsilon) * d
+    else:
+      c = rho * a + (1 - rho) * b
+        
+    yc = function_to_optimize(c)
+        
+    if yc < yd:
+      b, d, yd = d, c, yc
+    else:
+      a, b = b, c
+        
+    rho = 1 / (phi * (1 - s**(n-i+1)) / (1 - s**(n-i)))
+    
+  return (round(a, 2), round(b, 2)) if a < b else (round(b, 2), round(a, 2))
+'''
+        st.code(fibonacci_search_code, language="python")
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=[i for i in range(-15, 16)], y=[self.univariate_function(i) for i in range(-15, 16)], mode='lines', name='Univariate Function'))
@@ -42,5 +87,7 @@ class AforO_Bracketing:
         fig.update_yaxes(title='f(x)')
         fig.update_layout(title='Bracket for the function, x**2 - 3.5*x + 2.5')
         st.plotly_chart(fig)
+
+
 
 aforo_bracketing = AforO_Bracketing()
