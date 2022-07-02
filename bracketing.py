@@ -90,8 +90,16 @@ def fibonacci_search(self, function_to_optimize: typing.Callable, a:float, b:flo
 
         st.subheader('Golden Section Search')
 
-        bracket = self.bracketer.golden_section_search(self.univariate_function, -10, 10, 4)
-        st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}** for an initial bracket of **[-10, 10]** for 4 iterations")
+        st.write('Golden Section Search is very similar to Fibonacci Search except for the fact that it makes an assumption as follows:')
+        st.latex(
+            r"""
+                $$
+                $\underset{n → \inf}{\text{lim}} \quad \frac{F_n}{F_{n-1}} = \phi \\$
+                $$
+            """)
+        st.write('This helps by avoiding the calculation of phi in every iteration, thus making the algorithm faster in runtime.')
+        bracket = self.bracketer.golden_section_search(self.univariate_function, -10, 10, 6)
+        st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}** for an initial bracket of **[-10, 10]** for 6 iterations")
 
         golden_section_search_code = '''
 def golden_section_search(self, function_to_optimize: typing.Callable, a:float, b:float, n:float) -> tuple:
