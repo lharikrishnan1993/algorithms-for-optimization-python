@@ -49,8 +49,8 @@ def bracket_minimum(self, function_to_optimize: typing.Callable, initial_state:f
 
         st.subheader('Fibonacci Search')
 
-        bracket = self.bracketer.fibonacci_search(self.univariate_function, -10, 10, 3)
-        st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}** for an initial bracket of **[-10, 10]** for 3 iterations")
+        bracket = self.bracketer.fibonacci_search(self.univariate_function, -10, 10, 4)
+        st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}** for an initial bracket of **[-10, 10]** for 4 iterations")
 
         fibonacci_search_code = '''
 def fibonacci_search(self, function_to_optimize: typing.Callable, a:float, b:float, n:float, epsilon:float=1e-2) -> tuple:
@@ -88,6 +88,38 @@ def fibonacci_search(self, function_to_optimize: typing.Callable, a:float, b:flo
         fig.update_layout(title='Bracket for the function, x**2 - 3.5*x + 2.5')
         st.plotly_chart(fig)
 
+        st.subheader('Golden Section Search')
+
+        bracket = self.bracketer.golden_section_search(self.univariate_function, -10, 10, 4)
+        st.write(f"For the example univariate function, $x^2 - 3.5x + 2.5$, the resulting bracket is **{bracket}** for an initial bracket of **[-10, 10]** for 4 iterations")
+
+        golden_section_search_code = '''
+def golden_section_search(self, function_to_optimize: typing.Callable, a:float, b:float, n:float) -> tuple:
+  sqrt_five = math.sqrt(5)
+  phi = (1 + sqrt_five) / 2
+  rho = phi - 1
+  d = rho * b + (1 - rho) * a
+  yd = function_to_optimize(d)
+
+  for i in range(1, n):
+    c = rho * a + (1 - rho) * b
+    yc = function_to_optimize(c)
+    if yc < yd:
+      b, d, yd = d, c, yc
+    else:
+      a, b = b, c
+
+  return (round(a, 2), round(b, 2)) if a < b else (round(b, 2), round(a, 2))
+'''
+        st.code(golden_section_search_code, language="python")
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=[i for i in range(-15, 16)], y=[self.univariate_function(i) for i in range(-15, 16)], mode='lines', name='Univariate Function'))
+        fig.add_trace(go.Scatter(x=[x for x in bracket], y=[self.univariate_function(x) for x in bracket], mode='markers', name='Intervals'))
+        fig.update_xaxes(title='x')
+        fig.update_yaxes(title='f(x)')
+        fig.update_layout(title='Bracket for the function, x**2 - 3.5*x + 2.5')
+        st.plotly_chart(fig)
 
 
 aforo_bracketing = AforO_Bracketing()
